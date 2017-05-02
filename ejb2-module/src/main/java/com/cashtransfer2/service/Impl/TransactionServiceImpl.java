@@ -8,6 +8,8 @@ import com.cashtransfer2.service.TransactionService;
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -36,9 +38,18 @@ public class TransactionServiceImpl implements TransactionService {
         return null;
     }
 
+    /*
+9.Провести эксперимент: закончить транзакцию откатом в сессионном фасаде для
+второй базы данных, должно выполняться вне контекста транзакции, продемонстрировать
+результат эксперимента, и убедиться, что обновления отменены.
+     */
     @Override
+    @TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
     public void delete(Transaction transaction) {
-        Transaction mergedTransaction = em.merge(transaction);
+        em.merge(transaction);
+        if(transaction != null){
+            ctx.setRollbackOnly();
+        }
         em.remove(transaction);
     }
 
@@ -58,6 +69,11 @@ public class TransactionServiceImpl implements TransactionService {
         return transaction;
     }
 
+    /*
+8. Провести эксперимент: закончить транзакцию откатом, выбросив системное
+исключение EJBException в сессионном фасаде для второй базы данных после
+обновления источника данных, и убедиться, что обновления отменены.
+     */
     @Override
     public Transaction cashTransferWithException(Transaction transaction) {
         BankAccount sender = transaction.getSenderAcc();

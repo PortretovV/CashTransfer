@@ -5,9 +5,7 @@ import com.cashtransfer1.service.TransactionService;
 import com.cashtransfer1.entity.Transaction;
 
 import javax.annotation.Resource;
-import javax.ejb.EJBException;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -72,29 +70,43 @@ public class TransactionServiceImpl implements TransactionService {
         return null;
     }
 
+
+    /*
+7.Провести эксперимент: закончить транзакцию откатом в сессионном фасаде для
+первой базы данных и убедиться, что обновления отменены.
+     */
+
     @Override
     public Transaction saveWithRollback(Transaction transaction) {
+        ctx.setRollbackOnly();
         if(transaction.getIdTransaction() == null){
-            if(!ctx.getRollbackOnly()){
-                ctx.setRollbackOnly();
-            }
             em.persist(transaction);
             return transaction;
         }
         else if (transaction.getIdTransaction()>0){
-            if(!ctx.getRollbackOnly()){
-                ctx.setRollbackOnly();
-            }
             em.merge(transaction);
             return transaction;
         }
         return null;
     }
 
+
+
+    /*
+10.Провести эксперимент: закончить транзакцию откатом, выбросив системное
+исключение EJBException в сессионном фасаде для первой базы данных должно
+выполняться в контексте новой транзакции и после
+обновления источника данных, и убедиться, что обновления отменены.
+     */
+
     @Override
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void delete(Transaction transaction) {
-        Transaction mergedTransaction = em.merge(transaction);
+        em.merge(transaction);
         em.remove(transaction);
+        if(transaction != null){
+            throw new EJBException("Выполняется в контексте новой тврназакции");
+        }
     }
 
 
