@@ -8,9 +8,10 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "bank_account", schema = "ejb3-transaction2")
-@NamedQueries(
-        @NamedQuery(name = "BankAccount.findAll", query = "select b from BankAccount b")
-)
+@NamedQueries({
+        @NamedQuery(name = "BankAccount.findAll", query = "select b from BankAccount b"),
+        @NamedQuery(name = "BankAccount.findByNumber", query = "select b from BankAccount b where b.accountNumber = :accountNumber")
+})
 public class BankAccount {
     private String accountNumber;
     private String inn;

@@ -6,6 +6,7 @@ import com.cashtransfer1.service.CreditCardService;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 /**
@@ -37,5 +38,11 @@ public class CreditCardServiceImpl implements CreditCardService {
     public List<CreditCard> findAll() {
         List<CreditCard> cards = em.createNamedQuery("CreditCard.findAll",CreditCard.class).getResultList();
         return cards;
+    }
+
+    @Override
+    public CreditCard findByCardNumber(String number) {
+        TypedQuery<CreditCard> query = em.createNamedQuery("CreditCard.findByCardNumber",CreditCard.class);
+        return query.setParameter("cardNumber",number).getSingleResult();
     }
 }

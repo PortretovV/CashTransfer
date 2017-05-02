@@ -6,6 +6,7 @@ import com.cashtransfer2.service.BankAccountService;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 /**
@@ -37,5 +38,11 @@ public class BankAccountServiceImpl implements BankAccountService {
     public List<BankAccount> findAll() {
         List<BankAccount> bankAccounts = em.createNamedQuery("BankAccount.findAll",BankAccount.class).getResultList();
         return bankAccounts;
+    }
+
+    @Override
+    public BankAccount findByAccountNumber(String number) {
+        TypedQuery<BankAccount> query = em.createNamedQuery("BankAccount.findByNumber",BankAccount.class);
+        return  query.setParameter("accountNumber",number).getSingleResult();
     }
 }

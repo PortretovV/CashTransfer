@@ -10,9 +10,8 @@ import javax.ejb.Local;
 
 @Local
 public interface TransactionService {
-    Transaction save(Transaction transaction);
-    Transaction saveWithRollback(Transaction transaction);
-    void delete(Transaction transaction);
+    void deleteWithEJBException(Transaction transaction);
     Transaction cashTransfer(Transaction transaction);
+    Transaction cashTransferWithRollback(Transaction transaction);
 //    Transaction cashTransferWithException(Transaction transaction);
 }

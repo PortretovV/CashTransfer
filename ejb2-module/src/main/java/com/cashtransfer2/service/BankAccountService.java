@@ -14,4 +14,5 @@ public interface BankAccountService {
     BankAccount save(BankAccount account);
     void delete(BankAccount account);
     List<BankAccount> findAll();
+    BankAccount findByAccountNumber(String number);
 }

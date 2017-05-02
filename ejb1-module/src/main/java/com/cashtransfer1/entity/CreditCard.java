@@ -9,9 +9,10 @@ import java.util.Collection;
  */
 @Entity
 @Table(name = "credit_card", schema = "ejb3-transaction1")
-@NamedQueries(
-        @NamedQuery(name = "CreditCard.findAll", query = "select c from CreditCard c")
-)
+@NamedQueries({
+        @NamedQuery(name = "CreditCard.findAll", query = "select c from CreditCard c"),
+        @NamedQuery(name = "CreditCard.findByCardNumber", query = "select c from CreditCard c where c.cardNumber=:cardNumber")
+})
 public class CreditCard {
     private String cardNumber;
     private String userInfo;

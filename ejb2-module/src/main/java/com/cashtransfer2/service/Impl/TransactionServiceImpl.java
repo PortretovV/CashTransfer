@@ -25,8 +25,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Resource
     SessionContext ctx;
 
-    @Override
-    public Transaction save(Transaction transaction) {
+
+    private Transaction save(Transaction transaction) {
         if(transaction.getIdTransaction() == null){
             em.persist(transaction);
             return transaction;
@@ -45,7 +45,7 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     @TransactionAttribute(value = TransactionAttributeType.NOT_SUPPORTED)
-    public void delete(Transaction transaction) {
+    public void deleteRollback(Transaction transaction) {
         em.merge(transaction);
         if(transaction != null){
             ctx.setRollbackOnly();
@@ -55,17 +55,20 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction cashTransfer(Transaction transaction) {
-        BankAccount sender = transaction.getSenderAcc();
-        BankAccount receiver = transaction.getReciverAcc();
+        transaction = save(transaction);
+        if(transaction != null){
+            BankAccount sender = transaction.getSenderAcc();
+            BankAccount receiver = transaction.getReciverAcc();
 
-        double newSenderSum = sender.getSum() - transaction.getSumTransaction();
-        double newReceiverSum = receiver.getSum() + transaction.getSumTransaction();
-        sender.setSum(newSenderSum);
-        receiver.setSum(newReceiverSum);
-        em.merge(sender);
-        em.merge(receiver);
+            double newSenderSum = sender.getSum() - transaction.getSumTransaction();
+            double newReceiverSum = receiver.getSum() + transaction.getSumTransaction();
+            sender.setSum(newSenderSum);
+            receiver.setSum(newReceiverSum);
+            em.merge(sender);
+            em.merge(receiver);
 
-        transaction = em.merge(transaction);
+            transaction = em.merge(transaction);
+        }
         return transaction;
     }
 
@@ -76,19 +79,22 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public Transaction cashTransferWithException(Transaction transaction) {
-        BankAccount sender = transaction.getSenderAcc();
-        BankAccount receiver = transaction.getReciverAcc();
+        transaction = save(transaction);
+        if(transaction != null){
+            BankAccount sender = transaction.getSenderAcc();
+            BankAccount receiver = transaction.getReciverAcc();
 
-        double newSenderSum = sender.getSum() - transaction.getSumTransaction();
-        double newReceiverSum = receiver.getSum() + transaction.getSumTransaction();
-        sender.setSum(newSenderSum);
-        receiver.setSum(newReceiverSum);
-        em.merge(sender);
-        em.merge(receiver);
+            double newSenderSum = sender.getSum() - transaction.getSumTransaction();
+            double newReceiverSum = receiver.getSum() + transaction.getSumTransaction();
+            sender.setSum(newSenderSum);
+            receiver.setSum(newReceiverSum);
+            em.merge(sender);
+            em.merge(receiver);
 
-        transaction = em.merge(transaction);
-        if(!ctx.getRollbackOnly()){
-            throw new TransactionException("Изменения не должны вступить в силу");
+            transaction = em.merge(transaction);
+            if(!ctx.getRollbackOnly()){
+                throw new TransactionException("Изменения не должны вступить в силу");
+            }
         }
 
         return transaction;

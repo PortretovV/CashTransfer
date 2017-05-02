@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h1 style="color: aqua">Все переводы денег с кредитной карты счета на карту</h1>
+<c:forEach items="#{cardTransaction.creditCardList}" var="card">
+    <h3><h:outputText value="#{card.cardNumber}"/> </h3>
+    Пользователь: <h:outputText value="#{card.userInfo}"/><br/>
+    Дата окончания : <h:outputText value="#{card.endDate}"/><br/>
+    Секретный код: <h:outputText value="#{card.securityCode}"/><br/>
+    <h5 style="color:darkslategray;">Сумма на счете: <h:outputText value="#{card.deposit}"/></h5><br/>
+    <h4 style="color:chocolate;">Транзакции по счету:</h4>
+    <h:commandLink value="Добавить транзакцию" action="#{cardTransaction.createTransaction(card)}"/><br/>
+    <c:forEach items="#{card.transactions}" var="transaction">
+        Номер перевода: <h:outputText value="#{transaction.idTransaction}"/>|
+        <h:commandLink value="Удалить транзакцию c откатом" action="#{cardTransaction.deleteRollback(transaction)}"/>|<br/>
+        Перевод от: <h:outputText value="#{transaction.senderCard.cardNumber}"/>--->
+        на <h:outputText value="#{transaction.reciverCard.cardNumber}"/><br/>
+        Сумма перевода: <h:outputText value="#{transaction.sumTransaction}"/><br/><br/>
+    </c:forEach>
+    <c:forEach items="#{card.transactions1}" var="transaction">
+        Номер перевода: <h:outputText value="#{transaction.idTransaction}"/>|
+        <h:commandLink value="Удалить транзакцию c откатом" action="#{cardTransaction.deleteRollback(transaction)}"/>|<br/>
+        Перевод от: <h:outputText value="#{transaction.senderCard.cardNumber}"/>--->
+        на <h:outputText value="#{transaction.reciverCard.cardNumber}"/><br/>
+        Сумма перевода: <h:outputText value="#{transaction.sumTransaction}"/><br/><br/>
+    </c:forEach>
+</c:forEach>
+</html>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:c="http://java.sun.com/jsp/jstl/core">
+<head>
+
+</head>
+<h:body>
+    <h:form>
+        <h1 style="color: aqua">Все переводы денег с банковского счета на банковский</h1>
+        <c:forEach items="#{bankTransaction.bankAccountList}" var="card">
+            <h3><h:outputText value="#{card.bankName}"/> </h3>
+            Номер счета: <h:outputText value="#{card.accountNumber}"/><br/>
+            Пользователь: <h:outputText value="#{card.userInfo}"/><br/>
+            ИНН: <h:outputText value="#{card.inn}"/><br/>
+            БИК: <h:outputText value="#{card.bik}"/><br/>
+            <h5 style="color:darkslategray;">Сумма на счете: <h:outputText value="#{card.sum}"/></h5><br/>
+            <h4 style="color:chocolate;">Транзакции по счету:</h4>
+            <h:commandLink value="Добавить транзакцию" action="#{bankTransaction.createTransaction(card)}"/><br/>
+            <c:forEach items="#{card.transactions1}" var="transaction">
+                Номер перевода: <h:outputText value="#{transaction.idTransaction}"/>|
+                <h:commandLink value="Удалить транзакцию c откатом" action="#{bankTransaction.deleteRollback(transaction)}"/>|<br/>
+                Перевод от: <h:outputText value="#{transaction.senderAcc.accountNumber}"/>--->
+                на <h:outputText value="#{transaction.reciverAcc.accountNumber}"/><br/>
+                Сумма перевода: <h:outputText value="#{transaction.sumTransaction}"/><br/><br/>
+            </c:forEach>
+            <c:forEach items="#{card.transactions2}" var="transaction">
+                Номер перевода: <h:outputText value="#{transaction.idTransaction}"/>|
+                <h:commandLink value="Удалить транзакцию с откатом" action="#{bankTransaction.deleteRollback(transaction)}"/>|<br/>
+                Перевод от: <h:outputText value="#{transaction.senderAcc.accountNumber}"/>--->
+                на <h:outputText value="#{transaction.reciverAcc.accountNumber}"/><br/>
+                Сумма перевода: <h:outputText value="#{transaction.sumTransaction}"/><br/><br/>
+            </c:forEach>
+        </c:forEach>
+    </h:form>
+</h:body>
+</html>

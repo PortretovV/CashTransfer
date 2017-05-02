@@ -20,8 +20,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Resource
     private SessionContext ctx;
 
-    @Override
-    public Transaction cashTransfer(Transaction transaction){
+    private Transaction transfer(Transaction transaction){
         CreditCard sender = transaction.getSenderCard();
         CreditCard receiver = transaction.getReciverCard();
 
@@ -34,6 +33,18 @@ public class TransactionServiceImpl implements TransactionService {
 
         transaction = em.merge(transaction);
         return transaction;
+    }
+
+    @Override
+    public Transaction cashTransfer(Transaction transaction){
+        transaction = save(transaction);
+        return transfer(transaction);
+    }
+
+    @Override
+    public Transaction cashTransferWithRollback(Transaction transaction) {
+        transaction = saveWithRollback(transaction);
+        return transfer(transaction);
     }
 
 //    @Override
@@ -57,8 +68,8 @@ public class TransactionServiceImpl implements TransactionService {
 //        return transaction;
 //    }
 
-    @Override
-    public Transaction save(Transaction transaction) {
+
+    private Transaction save(Transaction transaction) {
         if(transaction.getIdTransaction() == null){
             em.persist(transaction);
             return transaction;
@@ -76,8 +87,8 @@ public class TransactionServiceImpl implements TransactionService {
 первой базы данных и убедиться, что обновления отменены.
      */
 
-    @Override
-    public Transaction saveWithRollback(Transaction transaction) {
+
+    private Transaction saveWithRollback(Transaction transaction) {
         ctx.setRollbackOnly();
         if(transaction.getIdTransaction() == null){
             em.persist(transaction);
@@ -101,7 +112,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
-    public void delete(Transaction transaction) {
+    public void deleteWithEJBException(Transaction transaction) {
         em.merge(transaction);
         em.remove(transaction);
         if(transaction != null){

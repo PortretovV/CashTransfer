@@ -14,4 +14,5 @@ public interface CreditCardService {
     CreditCard save(CreditCard creditCard);
     void delete(CreditCard creditCard);
     List<CreditCard> findAll();
+    CreditCard findByCardNumber(String number);
 }
