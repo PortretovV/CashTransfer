@@ -6,6 +6,7 @@ import javax.persistence.*;
  * Created by VP on 02.05.2017.
  */
 @Entity
+@Table(name = "transaction", schema = "ejb3-transaction1")
 public class Transaction {
     private Integer idTransaction;
     private Double sumTransaction;
